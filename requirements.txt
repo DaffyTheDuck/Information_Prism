@@ -1,0 +1,11 @@
+streamlit
+langchain
+langchain-community
+beautifulsoup4
+python-dotenv
+requests
+selenium
+webdriver-manager
+unstructured
+playwright
+nltk
