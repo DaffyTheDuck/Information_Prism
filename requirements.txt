@@ -6,6 +6,10 @@ python-dotenv
 requests
 selenium
 webdriver-manager
-unstructured
-playwright
 nltk
+wikipedia
+transformers
+torch
+torchvision
+torchaudio
+spacy
