@@ -13,3 +13,5 @@ torch
 torchvision
 torchaudio
 spacy
+arxiv
+pymupdf

@@ -4,9 +4,9 @@ import requests
 import bs4
 import requests
 from selenium import webdriver
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.options import Options
 
 import nltk
 import spacy
@@ -19,7 +19,7 @@ Refer following for various document loaders
 https://python.langchain.com/docs/integrations/document_loaders/
 """
 
-from langchain_community.document_loaders import WikipediaLoader
+from langchain_community.document_loaders import WikipediaLoader, ArxivLoader
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 from transformers import pipeline
 
@@ -35,8 +35,8 @@ class DataLoader:
 
         self.options = Options()
         self.options.add_argument("--headless")
-        self.service = Service(GeckoDriverManager().install())
-        self.driver = webdriver.Firefox(service=self.service, options=self.options)
+        self.service = ChromeService(ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=self.options)
 
         # NLP for User Query
         nltk.download('stopwords')
@@ -187,7 +187,25 @@ class DataLoader:
         
         if len(self.all_docs) == 0:
             print("No Documents Were Loaded")
+    
+    def load_research_papers(self):
+        self.query = self.process_user_input()
+
+        for query in self.query:
+            self.loader = ArxivLoader(query=query, load_max_docs=5)
+            self.docs = self.loader.load()
+            for doc in range(len(self.docs)):
+                try:
+                    os.mkdir("RPLoader")
+                    with open(f"RPLoader/{self.docs[doc].metadata['Title']}.txt", "w", encoding="utf-8") as f:
+                        f.write(self.docs[doc].page_content)
+                except FileExistsError:
+                    with open(f"RPLoader/{self.docs[doc].metadata['Title']}.txt", "w", encoding="utf-8") as f:
+                        f.write(self.docs[doc].page_content)
+
+    def load_youtube_video_transcripts(self):
+        pass
 
 
-dl = DataLoader("47th President of The United States")
-dl.load_from_wikipedia()
+dl = DataLoader("RAG")
+dl.load_research_papers()
