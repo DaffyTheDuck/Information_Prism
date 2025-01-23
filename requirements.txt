@@ -15,3 +15,6 @@ torchaudio
 spacy
 arxiv
 pymupdf
+youtube-transcript-api
+faiss-cpu
+langchain-ollama
