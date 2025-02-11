@@ -6,6 +6,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain_community.llms import Ollama
 import streamlit as st
+import threading
 
 class Main:
 
@@ -53,9 +54,19 @@ class Main:
             from DataLoader import DataLoader
             self.data_loader = DataLoader(self.user_input)
             if self.web_option and self.wiki_option and self.yt_option:
-                self.data_loader.load_from_web()
-                self.data_loader.load_from_wikipedia()
-                self.data_loader.load_youtube_video_transcripts()
+                t1 = threading.Thread(target=self.data_loader.load_from_web)
+                t2 = threading.Thread(target=self.data_loader.load_from_wikipedia)
+                t3 = threading.Thread(target=self.data_loader.load_youtube_video_transcripts)
+
+                t1.start()
+                t2.start()
+                t3.start()
+
+                # join the threads back to the main process
+                t1.join()
+                t2.join()
+                t3.join()
+            
                 self.embedded_data = self.process_data.embbed_docs()
                 print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
             elif self.web_option and self.wiki_option:
@@ -87,10 +98,5 @@ class Main:
                 print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
         else:
             print("Waiting for the User Input")
-        
-        # if self.embedded_data is not None and self.user_input_vector is not None:
-        #     self.document_chain = create_stuff_documents_chain(self.llm, self.prompt)
-        #     self.retriever = st.session_state.v
-
 
 main = Main()

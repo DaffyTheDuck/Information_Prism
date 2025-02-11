@@ -9,6 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 from string import punctuation
+import torch
 
 import nltk
 import spacy
@@ -44,6 +45,7 @@ class DataLoader:
 
         # NLP for User Query
         nltk.download('stopwords')
+        nltk.download('punkt_tab')
         self.stop_words = set(stopwords.words('english'))
         # subprocess.run("python3 -m spacy download en_core_web_sm")
         os.system("python -m spacy download en_core_web_sm")
@@ -51,6 +53,9 @@ class DataLoader:
 
         self.user_input = user_input
         self.punctuations = set(punctuation)
+
+        # https://github.com/VikParuchuri/marker/issues/442#issuecomment-2636393925
+        torch.classes.__path__ = []
 
     
     def get_links_from_gpse(self):
