@@ -54,44 +54,56 @@ class Main:
             from DataLoader import DataLoader
             self.data_loader = DataLoader(self.user_input)
             if self.web_option and self.wiki_option and self.yt_option:
-                t1 = threading.Thread(target=self.data_loader.load_from_web)
-                t2 = threading.Thread(target=self.data_loader.load_from_wikipedia)
-                t3 = threading.Thread(target=self.data_loader.load_youtube_video_transcripts)
+                self.t1 = threading.Thread(target=self.data_loader.load_from_web)
+                self.t2 = threading.Thread(target=self.data_loader.load_from_wikipedia)
+                self.t3 = threading.Thread(target=self.data_loader.load_youtube_video_transcripts)
 
-                t1.start()
-                t2.start()
-                t3.start()
+                self.t1.start()
+                self.t2.start()
+                self.t3.start()
 
                 # join the threads back to the main process
-                t1.join()
-                t2.join()
-                t3.join()
+                self.t1.join()
+                self.t2.join()
+                self.t3.join()
             
                 self.embedded_data = self.process_data.embbed_docs()
                 print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
+            
             elif self.web_option and self.wiki_option:
-                self.data_loader.load_from_web()
-                self.data_loader.load_from_wikipedia()
+                self.t1.start()
+                self.t2.start()
+                self.t1.join()
+                self.t2.join()
                 self.embedded_data = self.process_data.embbed_docs()
                 print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
+            
             elif self.wiki_option and self.yt_option:
-                self.data_loader.load_from_wikipedia()
-                self.data_loader.load_youtube_video_transcripts()
+                self.t2.start()
+                self.t3.start()
+                self.t2.join()
+                self.t3.join()
                 self.embedded_data = self.process_data.embbed_docs()
                 print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
+            
             elif self.web_option and self.yt_option:
-                self.data_loader.load_from_web()
-                self.data_loader.load_youtube_video_transcripts()
+                self.t1.start()
+                self.t3.start()
+                self.t1.join()
+                self.t3.join()
                 self.embedded_data = self.process_data.embbed_docs()
                 print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
+            
             elif self.web_option:
                 self.data_loader.load_from_web()
                 self.embedded_data = self.process_data.embbed_docs()
                 print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
+            
             elif self.wiki_option:
                 self.data_loader.load_from_wikipedia()
                 self.embedded_data = self.process_data.embbed_docs()
                 print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
+            
             elif self.yt_option:
                 self.data_loader.load_youtube_video_transcripts()
                 self.embedded_data = self.process_data.embbed_docs()
