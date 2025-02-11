@@ -1,3 +1,4 @@
+import time
 from UI import UI
 from ProcessData import ProcessData
 from langchain_community.embeddings import OllamaEmbeddings
@@ -36,7 +37,7 @@ class Main:
         self.prompt = ChatPromptTemplate.from_template(
             """
             Answer the questions based on the provided context, and provide the most accurate
-            response based on the question
+            response based on the question, add your own knowledge and give detailed answer.
             <context>
             {context}
             <context>
@@ -50,65 +51,77 @@ class Main:
             print("No User File Was Found")
         
         # improve this logic later
-        if self.user_input:
-            from DataLoader import DataLoader
-            self.data_loader = DataLoader(self.user_input)
-            if self.web_option and self.wiki_option and self.yt_option:
-                self.t1 = threading.Thread(target=self.data_loader.load_from_web)
-                self.t2 = threading.Thread(target=self.data_loader.load_from_wikipedia)
-                self.t3 = threading.Thread(target=self.data_loader.load_youtube_video_transcripts)
+        with st.spinner("Cooking!", show_time=True):
+            if self.user_input:
+                from DataLoader import DataLoader
+                self.data_loader = DataLoader(self.user_input)
+                if self.web_option and self.wiki_option and self.yt_option:
+                    self.t1 = threading.Thread(target=self.data_loader.load_from_web)
+                    self.t2 = threading.Thread(target=self.data_loader.load_from_wikipedia)
+                    self.t3 = threading.Thread(target=self.data_loader.load_youtube_video_transcripts)
 
-                self.t1.start()
-                self.t2.start()
-                self.t3.start()
+                    self.t1.start()
+                    self.t2.start()
+                    self.t3.start()
 
-                # join the threads back to the main process
-                self.t1.join()
-                self.t2.join()
-                self.t3.join()
-            
-                self.embedded_data = self.process_data.embbed_docs()
-                print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
-            
-            elif self.web_option and self.wiki_option:
-                self.t1.start()
-                self.t2.start()
-                self.t1.join()
-                self.t2.join()
-                self.embedded_data = self.process_data.embbed_docs()
-                print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
-            
-            elif self.wiki_option and self.yt_option:
-                self.t2.start()
-                self.t3.start()
-                self.t2.join()
-                self.t3.join()
-                self.embedded_data = self.process_data.embbed_docs()
-                print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
-            
-            elif self.web_option and self.yt_option:
-                self.t1.start()
-                self.t3.start()
-                self.t1.join()
-                self.t3.join()
-                self.embedded_data = self.process_data.embbed_docs()
-                print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
-            
-            elif self.web_option:
-                self.data_loader.load_from_web()
-                self.embedded_data = self.process_data.embbed_docs()
-                print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
-            
-            elif self.wiki_option:
-                self.data_loader.load_from_wikipedia()
-                self.embedded_data = self.process_data.embbed_docs()
-                print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
-            
-            elif self.yt_option:
-                self.data_loader.load_youtube_video_transcripts()
-                self.embedded_data = self.process_data.embbed_docs()
-                print(self.embedded_data.similarity_search_by_vector(self.user_input_vector))
-        else:
-            print("Waiting for the User Input")
+                    # join the threads back to the main process
+                    self.t1.join()
+                    self.t2.join()
+                    self.t3.join()
+                
+                    self.embedded_data = self.process_data.embbed_docs()
+                    self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
+                
+                elif self.web_option and self.wiki_option:
+                    self.t1.start()
+                    self.t2.start()
+                    self.t1.join()
+                    self.t2.join()
+                    self.embedded_data = self.process_data.embbed_docs()
+                    self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
+                
+                elif self.wiki_option and self.yt_option:
+                    self.t2.start()
+                    self.t3.start()
+                    self.t2.join()
+                    self.t3.join()
+                    self.embedded_data = self.process_data.embbed_docs()
+                    self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
+                
+                elif self.web_option and self.yt_option:
+                    self.t1.start()
+                    self.t3.start()
+                    self.t1.join()
+                    self.t3.join()
+                    self.embedded_data = self.process_data.embbed_docs()
+                    self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
+                
+                elif self.web_option:
+                    self.data_loader.load_from_web()
+                    self.embedded_data = self.process_data.embbed_docs()
+                    self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
+                
+                elif self.wiki_option:
+                    self.data_loader.load_from_wikipedia()
+                    self.embedded_data = self.process_data.embbed_docs()
+                    self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
+                
+                elif self.yt_option:
+                    self.data_loader.load_youtube_video_transcripts()
+                    self.embedded_data = self.process_data.embbed_docs()
+                    self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
+                
+                self.document_chain = create_stuff_documents_chain(self.llm, self.prompt)
+                self.retriever = self.embedded_data.as_retriever()
+                self.retrieval_chain = create_retrieval_chain(self.retriever, self.document_chain)
+
+                self.start = time.process_time()
+                self.response = self.retrieval_chain.invoke({'input': self.user_input})
+
+                self.ui.respond_to_user(self.response)
+
+            else:
+                print("Waiting for the User Input")
+        
 
 main = Main()
