@@ -54,13 +54,24 @@ class ProcessData:
 
         return self.final_web_docs, self.final_wiki_docs, self.final_yt_docs
     
-    def load_user_file(self, user_pdf):
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            temp_file.write(user_pdf.read())
-            self.loader = PyPDFLoader(temp_file.name)
-            self.user_pdf_docs = self.loader.load()
-            self.user_pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
-            self.final_user_pdf_docs = self.user_pdf_splitter.split_documents(self.user_pdf_docs)
+    # def load_user_file(self, user_pdf):
+    #     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+    #         temp_file.write(user_pdf.read())
+    #         self.loader = PyPDFLoader(temp_file.name)
+    #         self.user_pdf_docs = self.loader.load()
+    #         self.user_pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
+    #         self.final_user_pdf_docs = self.user_pdf_splitter.split_documents(self.user_pdf_docs)
+
+    def load_user_files(self, user_pdfs):
+        self.final_user_pdf_docs = []
+        for user_pdf in user_pdfs:
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                temp_file.write(user_pdf.read())
+                loader = PyPDFLoader(temp_file.name)
+                user_pdf_docs = loader.load()
+                user_pdf_splitter = RecursiveCharacterTextSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
+                split_docs = user_pdf_splitter.split_documents(user_pdf_docs)
+                self.final_user_pdf_docs.extend(split_docs)
     
     def embbed_docs(self):
         self.final_web_docs, self.final_wiki_docs, self.final_yt_docs = self.split_text()

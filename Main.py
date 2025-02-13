@@ -46,7 +46,7 @@ class Main:
         )
 
         if self.user_file is not None:
-            self.process_data.load_user_file(self.user_file)
+            self.process_data.load_user_files(self.user_file)
         else:
             print("No User File Was Found")
         
@@ -108,6 +108,10 @@ class Main:
                 
                 elif self.yt_option:
                     self.data_loader.load_youtube_video_transcripts()
+                    self.embedded_data = self.process_data.embbed_docs()
+                    self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
+                
+                elif self.user_file:
                     self.embedded_data = self.process_data.embbed_docs()
                     self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
                 

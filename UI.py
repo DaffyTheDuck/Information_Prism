@@ -23,7 +23,7 @@ class UI:
 
             st.subheader("OR")
 
-            self.uploaded_file = st.file_uploader("Choose Your Own File", type=['pdf'])
+            self.uploaded_file = st.file_uploader("Choose Your Own Files", type=['pdf'], accept_multiple_files=True)
 
         # Build the chat UI
         if "messages" not in st.session_state:
@@ -48,7 +48,19 @@ class UI:
         with st.chat_message("assistant"):
             st.markdown(response['answer'])
         # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.session_state.messages.append({"role": "assistant", "content": response['answer']})
+        self.download_response()
+    
+    def download_response(self):
+        self.download_button = st.download_button(
+            label="Download PDF",
+            file_name='',
+            data=st.session_state.messages[-1]['content'],
+            mime='text/markdown'
+        )
+        if self.download_button:
+            st.toast("Downloaded the PDF :D")
+        
     
     def get_user_file(self):
         return self.uploaded_file
