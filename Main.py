@@ -86,7 +86,7 @@ class Main:
                     self.t3.start()
                     self.t2.join()
                     self.t3.join()
-                    self.embedded_data = self.process_data.embbed_docs()
+                    self.embedded_data = self.process_data.split_and_embbed()
                     self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
                 
                 elif self.web_option and self.yt_option:
@@ -94,26 +94,25 @@ class Main:
                     self.t3.start()
                     self.t1.join()
                     self.t3.join()
-                    self.embedded_data = self.process_data.embbed_docs()
+                    self.embedded_data = self.process_data.split_and_embbed()
                     self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
                 
                 elif self.web_option:
-                    self.data_loader.load_from_web()
-                    self.embedded_data = self.process_data.embbed_docs()
+                    self.embedded_data = self.process_data.split_and_embbed(self.data_loader.load_from_web())
                     self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
                 
                 elif self.wiki_option:
                     self.data_loader.load_from_wikipedia()
-                    self.embedded_data = self.process_data.embbed_docs()
+                    self.embedded_data = self.process_data.split_and_embbed()
                     self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
                 
                 elif self.yt_option:
                     self.data_loader.load_youtube_video_transcripts()
-                    self.embedded_data = self.process_data.embbed_docs()
+                    self.embedded_data = self.process_data.split_and_embbed()
                     self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
                 
                 elif self.user_file:
-                    self.embedded_data = self.process_data.embbed_docs()
+                    self.embedded_data = self.process_data.split_and_embbed()
                     self.similar_content = self.embedded_data.similarity_search_by_vector(self.user_input_vector)
                 
                 self.document_chain = create_stuff_documents_chain(self.llm, self.prompt)

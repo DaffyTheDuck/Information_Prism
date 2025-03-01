@@ -20,3 +20,4 @@ faiss-cpu
 langchain-ollama
 unstructured
 firecrawl-py
+sentence-transformers

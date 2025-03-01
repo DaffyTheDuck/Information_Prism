@@ -35,6 +35,7 @@ class DataLoader:
         self.CSE_CX_KEY = os.getenv("CSE_CX_KEY")
         self.BACKUP_CSE_API_KEY = os.getenv("BACKUP_CSE_API_KEY")
         self.YT_CSE_CX = os.getenv("YT_CSE_CX")
+        self.FIRECRAWL_KEY = os.getenv("FIRECRAWL_KEY")
 
         self.options = Options()
         self.options.add_argument("--headless")
@@ -54,6 +55,7 @@ class DataLoader:
 
         # https://github.com/VikParuchuri/marker/issues/442#issuecomment-2636393925
         torch.classes.__path__ = []
+        self.web_docs = []
 
     
     def get_links_from_gpse(self):
@@ -138,39 +140,24 @@ class DataLoader:
             self.get_links.append(self.data[i]["link"])
 
         return self.get_links
-
-
+    
     def load_from_web(self):
         self.get_links = self.links_list()
 
         try:
             for i in range(len(self.get_links)):
+                self.loader = FireCrawlLoader(
+                    api_key=self.FIRECRAWL_KEY,
+                    url=self.get_links[i],
+                    mode="scrape",
+                )
 
-                self.driver.get(self.get_links[i])
-                self.html_data = self.driver.page_source
-
-                # parse using the bs4
-                self.soup = bs4.BeautifulSoup(self.html_data, 'html.parser')
-
-                self.title = self.soup.title.string if self.soup.title else "No Title"
-                self.title = self.title.strip()
-
-                self.paragraphs = self.soup.find_all('p')
-                self.content = " ".join([p.get_text() for p in self.paragraphs]).strip()
-
-                # Append it to the file
-                self.clean_title = re.sub(r'[^\w\s]', '', self.title)
-                try:
-                    os.mkdir("WebLoader")
-                    with open(f"WebLoader/{self.clean_title}.txt", "w", encoding="utf-8") as f:
-                        f.write(self.content.strip())
-                except FileExistsError:
-                    with open(f"WebLoader/{self.clean_title}.txt", "w", encoding="utf-8") as f:
-                        f.write(self.content.strip())
-            self.driver.close()
+                self.data = self.loader.load()
+                self.web_docs.extend(self.data)
         except Exception as e:
             print(f"Error: {e}")
-            pass
+
+        return self.web_docs
     
 
     def load_from_wikipedia(self):
