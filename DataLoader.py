@@ -22,9 +22,7 @@ Refer following for various document loaders
 https://python.langchain.com/docs/integrations/document_loaders/
 """
 
-from langchain_community.document_loaders import WikipediaLoader, ArxivLoader, YoutubeLoader
-from transformers import AutoTokenizer, AutoModelForTokenClassification
-from transformers import pipeline
+from langchain_community.document_loaders import WikipediaLoader, ArxivLoader, YoutubeLoader, FireCrawlLoader
 from youtube_transcript_api._errors import NoTranscriptFound, NoTranscriptAvailable
 
 

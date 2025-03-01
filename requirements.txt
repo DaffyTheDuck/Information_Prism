@@ -19,3 +19,4 @@ youtube-transcript-api
 faiss-cpu
 langchain-ollama
 unstructured
+firecrawl-py

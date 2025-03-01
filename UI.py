@@ -54,9 +54,9 @@ class UI:
     def download_response(self):
         self.download_button = st.download_button(
             label="Download PDF",
-            file_name='',
+            file_name='test.pdf',
             data=st.session_state.messages[-1]['content'],
-            mime='text/markdown'
+            mime='text/plain'
         )
         if self.download_button:
             st.toast("Downloaded the PDF :D")
