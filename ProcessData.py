@@ -1,18 +1,21 @@
 import os
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import DirectoryLoader, TextLoader, PyPDFLoader
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 from langchain_community.vectorstores import FAISS
 import tempfile
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class ProcessData:
 
     def __init__(self):
         self.chunk_size = 700
         self.chunk_overlap = 50
-        self.embeddings = OllamaEmbeddings(
-            model="llama3.2"
-        )
+        self.HF_TOKEN = os.getenv("HF_TOKEN")
+        self.embeddings = HuggingFaceBgeEmbeddings(model_name="all-MiniLM-L6-v2")
 
     def load_user_files(self, user_pdfs):
         self.chunked_user_pdf = []
@@ -29,7 +32,6 @@ class ProcessData:
 
         self.chunked_wiki_docs = []
         self.chunked_yt_docs = []
-        self.chunked_user_pdf = []
         self.chunked_web_docs = []
 
         if docs:

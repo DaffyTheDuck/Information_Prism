@@ -35,7 +35,7 @@ class DataLoader:
         self.CSE_CX_KEY = os.getenv("CSE_CX_KEY")
         self.BACKUP_CSE_API_KEY = os.getenv("BACKUP_CSE_API_KEY")
         self.YT_CSE_CX = os.getenv("YT_CSE_CX")
-        self.FIRECRAWL_KEY = os.getenv("FIRECRAWL_KEY")
+        self.FIRECRAWL_KEY = os.getenv("FIRECRAWL_KEY_T")
 
         self.options = Options()
         self.options.add_argument("--headless")
@@ -133,7 +133,7 @@ class DataLoader:
 
     def links_list(self):
         self.get_links = []
-        self.contetn = []
+        self.content = []
         self.data = self.get_links_from_gpse()
 
         for i in range(0, len(self.data)):

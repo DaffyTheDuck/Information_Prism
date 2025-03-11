@@ -125,7 +125,6 @@ class Main:
                 self.ui.respond_to_user(self.response)
 
             else:
-                print("Waiting for the User Input")
-        
+                print("Waiting for the User Input")      
 
 main = Main()
