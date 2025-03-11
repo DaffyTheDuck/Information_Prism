@@ -21,3 +21,8 @@ langchain-ollama
 unstructured
 firecrawl-py
 sentence-transformers
+rouge-score
+matplotlib
+seaborn
+numpy
+pandas

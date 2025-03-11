@@ -1,4 +1,6 @@
 import streamlit as st
+from rouge_score import rouge_scorer
+
 
 class UI:
 
@@ -49,7 +51,9 @@ class UI:
             st.markdown(response['answer'])
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response['answer']})
-        self.download_response()
+        
+    def calculate_rouge_score(self):
+        pass
     
     def download_response(self):
         self.download_button = st.download_button(
