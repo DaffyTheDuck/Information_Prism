@@ -38,7 +38,7 @@ class Main:
             """
             Answer the questions based on the provided context, and provide the most accurate
             response based on the question, add your own knowledge and give detailed answer.
-            Always mention that you have used the context provided.
+            Always mention that you have used the context provided but only in the first line of the answer.
             <context>
             {context}
             <context>
